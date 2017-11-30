@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace _171109p
+namespace Game_Of_Life
 {
     static class Program
     {

@@ -1,4 +1,4 @@
-﻿namespace _171109p
+﻿namespace Game_Of_Life
 {
     partial class Form1
     {

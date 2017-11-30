@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace _171109p
+namespace Game_Of_Life
 {
     public partial class Form2 : Form
     {
@@ -75,8 +75,6 @@ namespace _171109p
             if(acceptable)
             {
                 Form1 f = new Form1(row, col);
-                //Application.Run(new Form1(row, col));
-                //((Form)this.Owner).Close();
                 this.Close();
                 if (this.owner_num == 1)
                 {

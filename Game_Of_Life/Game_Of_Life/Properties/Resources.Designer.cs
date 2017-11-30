@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace _171109p.Properties
+namespace Game_Of_Life.Properties
 {
 
 
