@@ -284,9 +284,10 @@ namespace _171109p
                 f.Show();
                 sr.Close();
             }
-            catch(Exception fioe)
+            catch (Exception fioe)
             {
                 MessageBox.Show("저장된 데이터가 없습니다.");
+            }
         }
 
         private void speed_Scroll(object sender, EventArgs e)
