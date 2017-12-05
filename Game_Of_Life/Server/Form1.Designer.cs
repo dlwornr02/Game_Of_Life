@@ -35,6 +35,7 @@
             this.btSend = new System.Windows.Forms.Button();
             this.btStart = new System.Windows.Forms.Button();
             this.btStop = new System.Windows.Forms.Button();
+            this.lb_room = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // txtIp
@@ -79,7 +80,7 @@
             // 
             // btStart
             // 
-            this.btStart.Location = new System.Drawing.Point(256, 47);
+            this.btStart.Location = new System.Drawing.Point(256, 24);
             this.btStart.Name = "btStart";
             this.btStart.Size = new System.Drawing.Size(75, 23);
             this.btStart.TabIndex = 5;
@@ -89,7 +90,7 @@
             // 
             // btStop
             // 
-            this.btStop.Location = new System.Drawing.Point(256, 76);
+            this.btStop.Location = new System.Drawing.Point(337, 24);
             this.btStop.Name = "btStop";
             this.btStop.Size = new System.Drawing.Size(75, 23);
             this.btStop.TabIndex = 6;
@@ -97,11 +98,21 @@
             this.btStop.UseVisualStyleBackColor = true;
             this.btStop.Click += new System.EventHandler(this.btStop_Click);
             // 
+            // lb_room
+            // 
+            this.lb_room.FormattingEnabled = true;
+            this.lb_room.ItemHeight = 12;
+            this.lb_room.Location = new System.Drawing.Point(280, 78);
+            this.lb_room.Name = "lb_room";
+            this.lb_room.Size = new System.Drawing.Size(237, 172);
+            this.lb_room.TabIndex = 7;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(328, 344);
+            this.ClientSize = new System.Drawing.Size(594, 344);
+            this.Controls.Add(this.lb_room);
             this.Controls.Add(this.btStop);
             this.Controls.Add(this.btStart);
             this.Controls.Add(this.btSend);
@@ -111,6 +122,7 @@
             this.Controls.Add(this.txtIp);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -125,6 +137,7 @@
         private System.Windows.Forms.Button btSend;
         private System.Windows.Forms.Button btStart;
         private System.Windows.Forms.Button btStop;
+        private System.Windows.Forms.ListBox lb_room;
     }
 }
 

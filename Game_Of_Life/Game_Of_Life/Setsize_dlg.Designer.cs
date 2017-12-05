@@ -1,6 +1,6 @@
 ﻿namespace Game_Of_Life
 {
-    partial class Form2
+    partial class Setsize_dlg
     {
         /// <summary>
         /// Required designer variable.

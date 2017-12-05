@@ -37,8 +37,12 @@
             this.저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.불러오기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.종료ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.접속ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.접속해제ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.speed = new System.Windows.Forms.TrackBar();
             this.speedlb = new System.Windows.Forms.Label();
+            this.lb_point = new System.Windows.Forms.Label();
             this.Menu1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.speed)).BeginInit();
             this.SuspendLayout();
@@ -66,7 +70,8 @@
             // Menu1
             // 
             this.Menu1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.메뉴ToolStripMenuItem});
+            this.메뉴ToolStripMenuItem,
+            this.onlineToolStripMenuItem});
             this.Menu1.Location = new System.Drawing.Point(0, 0);
             this.Menu1.Name = "Menu1";
             this.Menu1.Size = new System.Drawing.Size(280, 24);
@@ -120,6 +125,29 @@
             this.종료ToolStripMenuItem.Text = "종료";
             this.종료ToolStripMenuItem.Click += new System.EventHandler(this.종료ToolStripMenuItem_Click);
             // 
+            // onlineToolStripMenuItem
+            // 
+            this.onlineToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.접속ToolStripMenuItem,
+            this.접속해제ToolStripMenuItem});
+            this.onlineToolStripMenuItem.Name = "onlineToolStripMenuItem";
+            this.onlineToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.onlineToolStripMenuItem.Text = "Online";
+            // 
+            // 접속ToolStripMenuItem
+            // 
+            this.접속ToolStripMenuItem.Name = "접속ToolStripMenuItem";
+            this.접속ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.접속ToolStripMenuItem.Text = "접속";
+            this.접속ToolStripMenuItem.Click += new System.EventHandler(this.접속ToolStripMenuItem_Click);
+            // 
+            // 접속해제ToolStripMenuItem
+            // 
+            this.접속해제ToolStripMenuItem.Name = "접속해제ToolStripMenuItem";
+            this.접속해제ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.접속해제ToolStripMenuItem.Text = "접속해제";
+            this.접속해제ToolStripMenuItem.Click += new System.EventHandler(this.접속해제ToolStripMenuItem_Click);
+            // 
             // speed
             // 
             this.speed.Location = new System.Drawing.Point(32, 171);
@@ -139,11 +167,21 @@
             this.speedlb.TabIndex = 4;
             this.speedlb.Text = "label1";
             // 
+            // lb_point
+            // 
+            this.lb_point.AutoSize = true;
+            this.lb_point.Location = new System.Drawing.Point(41, 139);
+            this.lb_point.Name = "lb_point";
+            this.lb_point.Size = new System.Drawing.Size(38, 12);
+            this.lb_point.TabIndex = 5;
+            this.lb_point.Text = "label1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(280, 266);
+            this.Controls.Add(this.lb_point);
             this.Controls.Add(this.speedlb);
             this.Controls.Add(this.speed);
             this.Controls.Add(this.stopBtn);
@@ -175,6 +213,10 @@
         private System.Windows.Forms.ToolStripMenuItem 불러오기ToolStripMenuItem;
         private System.Windows.Forms.TrackBar speed;
         private System.Windows.Forms.Label speedlb;
+        private System.Windows.Forms.ToolStripMenuItem onlineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 접속ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 접속해제ToolStripMenuItem;
+        private System.Windows.Forms.Label lb_point;
     }
 }
 

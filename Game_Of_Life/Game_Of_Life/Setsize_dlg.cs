@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace Game_Of_Life
 {
-    public partial class Form2 : Form
+    public partial class Setsize_dlg : Form
     {
         int owner_num;
         static Form1 final_owner;
-        public Form2(int form_num)
+        public Setsize_dlg(int form_num)
         {
             InitializeComponent();
             owner_num = form_num;
