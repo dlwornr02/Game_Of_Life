@@ -16,6 +16,7 @@ namespace Game_Of_Life
 {
     public partial class Form1 : Form
     {
+        static Thread t = null;
         public static int form_No = 0;
         static int row = 0;
         static int col = 0;
@@ -43,10 +44,10 @@ namespace Game_Of_Life
         static Label lb_gen;
         static Label lb_point;
 
-        static private Socket mainSocket; //Socket통신에 사용되는 변수
-        static private byte[] data = new byte[1024]; //고정길이로 데이터를 보내기위한 배열
-        static private int size = 1024; //고정길이 1024
-        static IPAddress thisAddress; //클라이언트(계산기)의 IP를 저장하기위한 변수
+        static private Socket mainSocket;
+        static private byte[] data = new byte[1024];
+        static private int size = 1024;
+        static IPAddress thisAddress;
         static public string server_IP, server_Port;
         static bool game_start;
 
@@ -92,12 +93,13 @@ namespace Game_Of_Life
             tb_chat.Multiline = true;
             tb_chat.Enabled = false;
 
-            if (form_No == 1) //static이라 여러번 이벤트핸들러를 등록하면여러번 처리되서 에러난다.
+            if (form_No == 1) //static버튼의 이벤트를 중복처리 방지.
             {
                 bt_creRoom.Click += bt_creRoom_click;
                 bt_enter.Click += bt_enter_click;
                 bt_ready.Click += bt_ready_click;
                 bt_exit.Click += bt_exit_click;
+                old_Form = this;
             }
 
             for (int i = 0; i < row; i++)
@@ -225,9 +227,17 @@ namespace Game_Of_Life
                 setlb_bt_size_position(true);
                 setlb_bt_size_position2(false);
             }
+            old_Form.startBtn.Enabled = true;
         }
         private void bt_enter_click(object sender, EventArgs e)
         {
+            if (t != null)
+            {
+                if (t.IsAlive)
+                {
+                    stop_Click(stopBtn, null);
+                }
+            }
             if (lb_Room.Items.Count > 0 && lb_Room.SelectedIndex != -1)
             {
                 room_No = lb_Room.SelectedIndex;
@@ -237,11 +247,9 @@ namespace Game_Of_Life
                 string s = (string)lb_Room.Items[room_No];
                 string[] s2 = s.Split(':', ' ', 'x');
 
-                //1,3,5,7
-                //"point:" + s2[0] + " gen:" + s2[1] + " size:" + s2[2] + "x" + s2[3] + " user:" + s2[4]
                 point_limit = int.Parse(s2[1]);
                 gen_limit = int.Parse(s2[3]);
-                if (!(row == int.Parse(s2[5]) && col == int.Parse(s2[6]))) //행과열이 다를 때 새로운 form생성
+                if (!(row == int.Parse(s2[5]) && col == int.Parse(s2[6])))
                 {
                     Form1 f = new Form1(int.Parse(s2[5]), int.Parse(s2[6]));
                     if (form_No == 2)
@@ -259,23 +267,32 @@ namespace Game_Of_Life
                     f.Show();
                     f.setlb_bt_size_position(false);
                     f.setlb_bt_size_position2(true);
+                    f.startBtn.Enabled = false;
                 }
-                else //row와 col이 같을 때
+                else
                 {
                     리셋ToolStripMenuItem_Click(null, null);
                     setlb_bt_size_position(false);
                     setlb_bt_size_position2(true);
+                    old_Form.startBtn.Enabled = false;
                 }
             }
         }
         private void bt_creRoom_click(object sender, EventArgs e)
         {
+            if (t != null)
+            {
+                if (t.IsAlive)
+                {
+                    stop_Click(stopBtn, null);
+                }
+            }
             createRoom cr = new createRoom();
             if (cr.ShowDialog() == DialogResult.OK)
             {
                 point_limit = createRoom.point;
                 gen_limit = createRoom.gen;
-                if (!(row == createRoom.row && col == createRoom.col)) //행과열이 다를 때 새로운 form생성
+                if (!(row == createRoom.row && col == createRoom.col))
                 {
                     Form1 f = new Form1(createRoom.row, createRoom.col);
                     if (form_No == 2)
@@ -294,19 +311,21 @@ namespace Game_Of_Life
                     f.Show();
                     f.setlb_bt_size_position(false);
                     f.setlb_bt_size_position2(true);
+                    f.startBtn.Enabled = false;
                 }
-                else //row와 col이 같을 때
+                else
                 {
                     리셋ToolStripMenuItem_Click(null, null);
                     setlb_bt_size_position(false);
                     setlb_bt_size_position2(true);
+                    old_Form.startBtn.Enabled = false;
                 }
                 SendMessaage("CreateRoom " + point_limit + " " + gen_limit + " " + createRoom.row + " " + createRoom.col);
                 room_No = lb_Room.Items.Count;
+                
 
             }
         }
-
         private void setlb_bt_size_position(bool visible)
         {
             if (visible)
@@ -373,7 +392,7 @@ namespace Game_Of_Life
         }
         private void panelDrag(object sender, EventArgs e)
         {
-            if (start == false && mouseDown)//&& (e).Button == MouseButtons.Left)
+            if (start == false && mouseDown)
             {
                 if (((Panel)sender).BackColor == Color.White)
                 {
@@ -402,7 +421,6 @@ namespace Game_Of_Life
             t.Abort();
             startBtn.Enabled = true;
         }
-        static Thread t = null;
         private void start_Click(object sender, EventArgs e)
         {
             stopBtn.Enabled = true;
@@ -539,13 +557,19 @@ namespace Game_Of_Life
         }
         private void 불러오기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //171205 예외처리 owner전하는
+            if (t != null)
+            {
+                if (t.IsAlive)
+                {
+                    stop_Click(stopBtn, null);
+                }
+            }
             try
             {
                 StreamReader sr = new StreamReader(new FileStream("save.txt", FileMode.Open, FileAccess.Read));
                 string[] s = sr.ReadLine().Split(' ');
                 point = 0;
-                if (!(row == int.Parse(s[0]) && col == int.Parse(s[1]))) //행과열이 다를 때 새로운 form생성
+                if (!(row == int.Parse(s[0]) && col == int.Parse(s[1])))
                 {
 
                     Form1 f = new Form1(int.Parse(s[0]), int.Parse(s[1]));
@@ -579,7 +603,7 @@ namespace Game_Of_Life
                     }
                     f.Show();
                 }
-                else //row와 col이 같을 때
+                else
                 {
                     for (int i = 0; i < int.Parse(s[0]); i++)
                     {
@@ -613,7 +637,7 @@ namespace Game_Of_Life
 
         }
         //////////////////////////////////////////////////////////////////////////////
-
+        //communication with server(서버와의 통신을 위한 코드)
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) //Form이 종료될 때의 이벤트 처리
         {
             if (t != null)
@@ -739,8 +763,6 @@ namespace Game_Of_Life
                     setlb_bt_size_position(true);
                     setlb_bt_size_position2(false);
                 }
-                //클라이언트에서 OVER을 보내고 Server 그대로 다시 흘러들어오게해서 에러남;;
-                //OVER의 ER을 처리하려고하니 예외발생
             }
             else if (stringData.Contains("@WHOLE@GAME@END"))
             {
@@ -755,7 +777,7 @@ namespace Game_Of_Life
                 }
                 game_start = false;
                 generation = 0;
-                startBtn.Enabled = true;
+                old_Form.startBtn.Enabled = false;
                 bt_exit.Enabled = true;
                 bt_ready.Enabled = true;
                 bt_ready.Text = "Ready";
@@ -765,10 +787,19 @@ namespace Game_Of_Life
             }
             else if (stringData.Contains("GAME@@ START@@"))
             {
+                if (t != null)
+                {
+                    if (t.IsAlive)
+                    {
+                        t.Abort();
+                    }
+                }
                 MessageBox.Show("Game Start!");
                 game_start = true;
                 gen_sec = 100;
                 generation = 0;
+                start = true;
+
                 startBtn.Enabled = false;
                 bt_exit.Enabled = false;
                 bt_ready.Enabled = false;
@@ -831,7 +862,6 @@ namespace Game_Of_Life
                 }
             }
         }
-
         private void 접속해제ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (mainSocket.Connected)
