@@ -513,6 +513,10 @@ namespace Game_Of_Life
             {
                 f.ShowDialog(this);
             }
+            else
+            {
+                MessageBox.Show("온라인 상태에서는 불가능합니다.");
+            }
         }
 
         private void 리셋ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -649,6 +653,10 @@ namespace Game_Of_Life
                     MessageBox.Show("저장된 데이터가 없습니다.");
                 }
                 lb_point.Text = "Point : " + point;
+            }
+            else
+            {
+                MessageBox.Show("온라인 상태에서는 불가능합니다.");
             }
         }
 
