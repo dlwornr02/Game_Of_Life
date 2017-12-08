@@ -82,8 +82,8 @@ namespace Game_Of_Life
 
             bt_creRoom.Text = "CreateRoom";
             bt_enter.Text = "Enter";
-            bt_creRoom.Size = new Size(80, 20);
-            bt_enter.Size = new Size(40, 20);
+            bt_creRoom.Size = new Size(100, 20);
+            bt_enter.Size = new Size(50, 20);
 
             bt_ready.Text = "Ready";
             bt_exit.Text = "exit";
@@ -307,7 +307,6 @@ namespace Game_Of_Life
             }
         }
 
-
         private void setlb_bt_size_position(bool visible)
         {
             if (visible)
@@ -315,7 +314,7 @@ namespace Game_Of_Life
                 lb_Room.Size = new Size(col * 10, row * 10);
                 lb_Room.Location = new Point(col * 10 + 35, 30);
                 bt_creRoom.Location = new Point(col * 10 + 35, row * 10 + 30);
-                bt_enter.Location = new Point(col * 10 + 130, row * 10 + 30);
+                bt_enter.Location = new Point(col * 10 + 150, row * 10 + 30);
                 lb_Room.Visible = true;
                 bt_creRoom.Visible = true;
                 bt_enter.Visible = true;
