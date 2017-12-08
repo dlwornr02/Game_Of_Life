@@ -77,9 +77,7 @@ namespace Game_Of_Life
             game_start = false;
 
             this.Text = "Game of Life";
-            this.Size = new Size(col * 10 + 35, row * 10 + 190);
-            this.MinimumSize = new Size(col * 10 + 35, row * 10 + 190);
-            this.MaximumSize = new Size(col * 10 + 35, row * 10 + 190);
+            set_Form_Size1();
             
 
             bt_creRoom.Text = "방만들기";
@@ -165,16 +163,21 @@ namespace Game_Of_Life
                 mainSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             if (mainSocket.Connected)
             {
-                set_Form_Size();
-                this.Size = new Size((col * 10 + 35) * 2, row * 10 + 190);
-                this.MinimumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
-                this.MaximumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
-                setlb_bt_size_position(true);
+                set_Form_Size2();
             }
         }
-        private void set_Form_Size()
+        private void set_Form_Size1()
         {
-
+            this.Size = new Size((col * 10 + 35), row * 10 + 190);
+            this.MinimumSize = new Size((col * 10 + 35), row * 10 + 190);
+            this.MaximumSize = new Size((col * 10 + 35), row * 10 + 190);
+        }
+        private void set_Form_Size2()
+        {
+            this.Size = new Size((col * 10 + 35) * 2, row * 10 + 190);
+            this.MinimumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
+            this.MaximumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
+            setlb_bt_size_position(true);
         }
         private void bt_ready_click(object sender, EventArgs e)
         {
@@ -393,7 +396,6 @@ namespace Game_Of_Life
             startBtn.Location = new Point(this.Width / 3 - 37, this.Height - 70);
             stopBtn.Location = new Point((this.Width / 3) * 2 - 37, this.Height - 70);
         }
-
         private void stop_Click(object sender, EventArgs e)
         {
             start = false;
@@ -503,7 +505,6 @@ namespace Game_Of_Life
             speedlb.Text = gen_sec / 1000.0 + "sec/g";
             lb_gen.Text = "generation: " + generation;
             lb_point.Text = "point: " + point;
-
         }
         private void 종료ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -537,7 +538,6 @@ namespace Game_Of_Life
                 }
             }
         }
-
         private void 불러오기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //171205 예외처리 owner전하는
@@ -552,7 +552,6 @@ namespace Game_Of_Life
                     Form1 f = new Form1(int.Parse(s[0]), int.Parse(s[1]));
                     if (form_No == 2)
                     {
-
                         this.Hide();
                         f.Owner = this;
                         old_Form = f;
@@ -563,7 +562,6 @@ namespace Game_Of_Life
                         old_Form.Close();
                         old_Form = f;
                     }
-
 
                     for (int i = 0; i < int.Parse(s[0]); i++)
                     {
@@ -650,7 +648,6 @@ namespace Game_Of_Life
                     break;
                 }
             }
-
             // 주소가 없을때
             if (thisAddress == null)
                 thisAddress = IPAddress.Loopback;// 로컬호스트 주소(Loop back주소)를 사용한다.
@@ -690,9 +687,7 @@ namespace Game_Of_Life
             }
             mainSocket.BeginReceive(data, 0, size, 0, ReceiveData, mainSocket);
             MessageBox.Show("서버와 연결되었습니다.");
-            this.Size = new Size((col * 10 + 35) * 2, row * 10 + 190);
-            this.MinimumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
-            this.MaximumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
+            set_Form_Size2();
         }
 
         //서버에서 데이터를 받았을 때 발생하는 이벤트를 처리하는 부분(프로토콜)
@@ -704,11 +699,6 @@ namespace Game_Of_Life
                 return;
             }
             int recv = remote.EndReceive(iar);
-            //if (recv <= 0)
-            //{
-            //    remote.Close();
-            //    return;
-            //}
             string stringData = Encoding.UTF8.GetString(data, 0, recv);
 
             //서버가 종료되었다는 데이터를 받으면 소켓을 닫아준다.
@@ -726,9 +716,7 @@ namespace Game_Of_Life
                 mainSocket.Close();
                 setlb_bt_size_position(false);
                 setlb_bt_size_position2(false);
-                this.Size = new Size((col * 10 + 35), row * 10 + 190);
-                this.MinimumSize = new Size((col * 10 + 35), row * 10 + 190);
-                this.MaximumSize = new Size((col * 10 + 35), row * 10 + 190);
+                set_Form_Size1();
                 return;
             }
             else if (stringData.Contains("CreateRoom "))
@@ -753,7 +741,7 @@ namespace Game_Of_Life
                     setlb_bt_size_position2(false);
                 }
                 //클라이언트에서 OVER을 보내고 Server 그대로 다시 흘러들어오게해서 에러남;;
-                //OVER의 ER을 처리하려고하니 에러가나지...
+                //OVER의 ER을 처리하려고하니 예외발생
             }
             else if (stringData.Contains("@WHOLE@GAME@END"))
             {
@@ -850,9 +838,7 @@ namespace Game_Of_Life
             if (mainSocket.Connected)
             {
                 DisConnectServer();
-                this.Size = new Size((col * 10 + 35), row * 10 + 190);
-                this.MinimumSize = new Size((col * 10 + 35), row * 10 + 190);
-                this.MaximumSize = new Size((col * 10 + 35), row * 10 + 190);
+                set_Form_Size1();
             }
             else
             {

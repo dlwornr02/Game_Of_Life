@@ -16,6 +16,8 @@ namespace Server
 {
     public partial class Form1 : Form
     {
+
+
         private byte[] data = new byte[1024];
         private int size = 1024;
         private Socket mainSocket = null;
