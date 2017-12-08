@@ -85,6 +85,7 @@ namespace Game_Of_Life
                 {
                     ((Form)this.Owner).Close();
                 }
+                Form1.old_Form = f;
                 f.Show(final_owner);
             }
         }

@@ -51,7 +51,7 @@ namespace Game_Of_Life
         static public string server_IP, server_Port;
         static bool game_start;
 
-        static Form1 old_Form;
+        static public Form1 old_Form;
 
         int local_form_num;
 
@@ -76,6 +76,7 @@ namespace Game_Of_Life
             point = 0;
             generation = 0;
             game_start = false;
+            start = false;
 
             this.Text = "Game of Life";
             set_Form_Size1();
@@ -503,11 +504,24 @@ namespace Game_Of_Life
 
         private void 게임크기설정ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            f.ShowDialog(this);
+            if(t!=null)
+                if(t.IsAlive)
+                {
+                    t.Abort();
+                }
+            if (!mainSocket.Connected)
+            {
+                f.ShowDialog(this);
+            }
         }
 
         private void 리셋ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (t != null)
+                if (t.IsAlive)
+                {
+                    t.Abort();
+                }
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < col; j++)
@@ -534,6 +548,11 @@ namespace Game_Of_Life
 
         private void 저장ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(t!=null)
+                if(t.IsAlive)
+                {
+                    MessageBox.Show("게임이 실행중 입니다.");
+                }
             using (StreamWriter sw = new StreamWriter(new FileStream("save.txt", FileMode.Create)))
             {
                 sw.Write(row + " ");
@@ -564,70 +583,73 @@ namespace Game_Of_Life
                     stop_Click(stopBtn, null);
                 }
             }
-            try
+            if (!mainSocket.Connected)
             {
-                StreamReader sr = new StreamReader(new FileStream("save.txt", FileMode.Open, FileAccess.Read));
-                string[] s = sr.ReadLine().Split(' ');
-                point = 0;
-                if (!(row == int.Parse(s[0]) && col == int.Parse(s[1])))
+                try
                 {
-
-                    Form1 f = new Form1(int.Parse(s[0]), int.Parse(s[1]));
-                    if (form_No == 2)
+                    StreamReader sr = new StreamReader(new FileStream("save.txt", FileMode.Open, FileAccess.Read));
+                    string[] s = sr.ReadLine().Split(' ');
+                    point = 0;
+                    if (!(row == int.Parse(s[0]) && col == int.Parse(s[1])))
                     {
-                        this.Hide();
-                        f.Owner = this;
-                        old_Form = f;
+
+                        Form1 f = new Form1(int.Parse(s[0]), int.Parse(s[1]));
+                        if (form_No == 2)
+                        {
+                            this.Hide();
+                            f.Owner = this;
+                            old_Form = f;
+                        }
+                        else
+                        {
+                            f.Owner = old_Form.Owner;
+                            old_Form.Close();
+                            old_Form = f;
+                        }
+
+                        for (int i = 0; i < int.Parse(s[0]); i++)
+                        {
+                            for (int j = 0; j < int.Parse(s[1]); j++)
+                            {
+                                if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 1)
+                                {
+                                    p[i, j].BackColor = Color.Black;
+                                    point++;
+                                }
+                                else if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 0)
+                                {
+                                    p[i, j].BackColor = Color.White;
+                                }
+                            }
+                        }
+                        f.Show();
                     }
                     else
                     {
-                        f.Owner = old_Form.Owner;
-                        old_Form.Close();
-                        old_Form = f;
-                    }
-
-                    for (int i = 0; i < int.Parse(s[0]); i++)
-                    {
-                        for (int j = 0; j < int.Parse(s[1]); j++)
+                        for (int i = 0; i < int.Parse(s[0]); i++)
                         {
-                            if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 1)
+                            for (int j = 0; j < int.Parse(s[1]); j++)
                             {
-                                p[i, j].BackColor = Color.Black;
-                                point++;
-                            }
-                            else if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 0)
-                            {
-                                p[i, j].BackColor = Color.White;
+                                if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 1)
+                                {
+                                    p[i, j].BackColor = Color.Black;
+                                    point++;
+                                }
+                                else if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 0)
+                                {
+                                    p[i, j].BackColor = Color.White;
+                                }
                             }
                         }
                     }
-                    f.Show();
+                    sr.Close();
                 }
-                else
+                catch (Exception fioe)
                 {
-                    for (int i = 0; i < int.Parse(s[0]); i++)
-                    {
-                        for (int j = 0; j < int.Parse(s[1]); j++)
-                        {
-                            if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 1)
-                            {
-                                p[i, j].BackColor = Color.Black;
-                                point++;
-                            }
-                            else if (int.Parse(s[i * int.Parse(s[1]) + j + 2]) == 0)
-                            {
-                                p[i, j].BackColor = Color.White;
-                            }
-                        }
-                    }
+                    MessageBox.Show("저장된 데이터가 없습니다.");
                 }
-                sr.Close();
+                lb_point.Text = "Point : " + point;
             }
-            catch (Exception fioe)
-            {
-                MessageBox.Show("저장된 데이터가 없습니다.");
-            }
-            lb_point.Text = "Point : " + point;
         }
 
         private void speed_Scroll(object sender, EventArgs e)
