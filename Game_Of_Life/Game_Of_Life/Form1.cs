@@ -252,7 +252,7 @@ namespace Game_Of_Life
                     }
                     else
                     {
-                        f.Owner = this.Owner;
+                        f.Owner = old_Form.Owner;
                         old_Form.Close();
                         old_Form = f;
                     }
@@ -287,7 +287,7 @@ namespace Game_Of_Life
                     }
                     else
                     {
-                        f.Owner = this.Owner;
+                        f.Owner = old_Form.Owner;
                         old_Form.Close();
                         old_Form = f;
                     }
@@ -558,7 +558,7 @@ namespace Game_Of_Life
                     }
                     else
                     {
-                        f.Owner = this.Owner;
+                        f.Owner = old_Form.Owner;
                         old_Form.Close();
                         old_Form = f;
                     }
@@ -627,7 +627,7 @@ namespace Game_Of_Life
                 {
                     DisConnectServer();
                 }
-                old_Form.Owner.Close(); //처음으로 생성된 Form은 hide()를 시켜줬기 때문에 반드시 해제를 해줘야 프로세스가 종료됨
+                old_Form.Owner.Dispose(); //처음으로 생성된 Form은 hide()를 시켜줬기 때문에 반드시 해제를 해줘야 프로세스가 종료됨
             }
             //종료될 때 서버와 연결되어있다면 연결을 해제해줘야한다.
             if (form_No == 1 && mainSocket.Connected)
