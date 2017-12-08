@@ -80,8 +80,8 @@ namespace Game_Of_Life
             set_Form_Size1();
             
 
-            bt_creRoom.Text = "방만들기";
-            bt_enter.Text = "입장";
+            bt_creRoom.Text = "CreateRoom";
+            bt_enter.Text = "Enter";
             bt_creRoom.Size = new Size(80, 20);
             bt_enter.Size = new Size(40, 20);
 
@@ -766,7 +766,7 @@ namespace Game_Of_Life
             }
             else if (stringData.Contains("GAME@@ START@@"))
             {
-                MessageBox.Show("게임을 시작하지");
+                MessageBox.Show("Game Start!");
                 game_start = true;
                 gen_sec = 100;
                 generation = 0;

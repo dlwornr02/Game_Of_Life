@@ -52,7 +52,7 @@
             this.startBtn.Name = "startBtn";
             this.startBtn.Size = new System.Drawing.Size(75, 23);
             this.startBtn.TabIndex = 0;
-            this.startBtn.Text = "시작";
+            this.startBtn.Text = "Start";
             this.startBtn.UseVisualStyleBackColor = true;
             this.startBtn.Click += new System.EventHandler(this.start_Click);
             // 
@@ -62,7 +62,7 @@
             this.stopBtn.Name = "stopBtn";
             this.stopBtn.Size = new System.Drawing.Size(75, 23);
             this.stopBtn.TabIndex = 1;
-            this.stopBtn.Text = "멈춤";
+            this.stopBtn.Text = "Stop";
             this.stopBtn.UseVisualStyleBackColor = true;
             this.stopBtn.Click += new System.EventHandler(this.stop_Click);
             // 
@@ -86,42 +86,43 @@
             this.불러오기ToolStripMenuItem,
             this.종료ToolStripMenuItem});
             this.메뉴ToolStripMenuItem.Name = "메뉴ToolStripMenuItem";
-            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
-            this.메뉴ToolStripMenuItem.Text = "메뉴";
+            this.메뉴ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.메뉴ToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.메뉴ToolStripMenuItem.Text = "Setting";
             // 
             // 게임크기설정ToolStripMenuItem
             // 
             this.게임크기설정ToolStripMenuItem.Name = "게임크기설정ToolStripMenuItem";
-            this.게임크기설정ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.게임크기설정ToolStripMenuItem.Text = "게임크기설정";
+            this.게임크기설정ToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.게임크기설정ToolStripMenuItem.Text = "GameSize";
             this.게임크기설정ToolStripMenuItem.Click += new System.EventHandler(this.게임크기설정ToolStripMenuItem_Click);
             // 
             // 리셋ToolStripMenuItem
             // 
             this.리셋ToolStripMenuItem.Name = "리셋ToolStripMenuItem";
-            this.리셋ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.리셋ToolStripMenuItem.Text = "리셋";
+            this.리셋ToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.리셋ToolStripMenuItem.Text = "Reset";
             this.리셋ToolStripMenuItem.Click += new System.EventHandler(this.리셋ToolStripMenuItem_Click);
             // 
             // 저장ToolStripMenuItem
             // 
             this.저장ToolStripMenuItem.Name = "저장ToolStripMenuItem";
-            this.저장ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.저장ToolStripMenuItem.Text = "저장";
+            this.저장ToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.저장ToolStripMenuItem.Text = "Sava";
             this.저장ToolStripMenuItem.Click += new System.EventHandler(this.저장ToolStripMenuItem_Click);
             // 
             // 불러오기ToolStripMenuItem
             // 
             this.불러오기ToolStripMenuItem.Name = "불러오기ToolStripMenuItem";
-            this.불러오기ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.불러오기ToolStripMenuItem.Text = "불러오기";
+            this.불러오기ToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.불러오기ToolStripMenuItem.Text = "Call Game Data";
             this.불러오기ToolStripMenuItem.Click += new System.EventHandler(this.불러오기ToolStripMenuItem_Click);
             // 
             // 종료ToolStripMenuItem
             // 
             this.종료ToolStripMenuItem.Name = "종료ToolStripMenuItem";
-            this.종료ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.종료ToolStripMenuItem.Text = "종료";
+            this.종료ToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.종료ToolStripMenuItem.Text = "Exit";
             this.종료ToolStripMenuItem.Click += new System.EventHandler(this.종료ToolStripMenuItem_Click);
             // 
             // onlineToolStripMenuItem
@@ -130,21 +131,22 @@
             this.접속ToolStripMenuItem,
             this.접속해제ToolStripMenuItem});
             this.onlineToolStripMenuItem.Name = "onlineToolStripMenuItem";
+            this.onlineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
             this.onlineToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.onlineToolStripMenuItem.Text = "Online";
             // 
             // 접속ToolStripMenuItem
             // 
             this.접속ToolStripMenuItem.Name = "접속ToolStripMenuItem";
-            this.접속ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
-            this.접속ToolStripMenuItem.Text = "접속";
+            this.접속ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.접속ToolStripMenuItem.Text = "Connect";
             this.접속ToolStripMenuItem.Click += new System.EventHandler(this.접속ToolStripMenuItem_Click);
             // 
             // 접속해제ToolStripMenuItem
             // 
             this.접속해제ToolStripMenuItem.Name = "접속해제ToolStripMenuItem";
-            this.접속해제ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
-            this.접속해제ToolStripMenuItem.Text = "접속해제";
+            this.접속해제ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.접속해제ToolStripMenuItem.Text = "Disconnect";
             this.접속해제ToolStripMenuItem.Click += new System.EventHandler(this.접속해제ToolStripMenuItem_Click);
             // 
             // speed
