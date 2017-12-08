@@ -23,8 +23,10 @@ namespace Game_Of_Life
         private void connect_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
-            ((Form1)Owner).server_IP = tb_IP.Text;
-            ((Form1)Owner).server_Port = tb_Port.Text;
+            //((Form1)this.Owner).server_IP = tb_IP.Text;
+            //((Form1)this.Owner).server_Port = tb_Port.Text;
+            Form1.server_IP = tb_IP.Text;
+            Form1.server_Port = tb_Port.Text;
             this.Close();
         }
 

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
 using System.IO;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
@@ -23,6 +22,7 @@ namespace Server
         List<Socket> connectedClients = new List<Socket> { }; //접속한 클라이언트들을 관리하기위한 List
         Dictionary<int, List<Socket>> Room = new Dictionary<int, List<Socket>> { };
         Dictionary<int, int> rN_Readynum = new Dictionary<int, int> { };
+        Dictionary<int, int> rN_point = new Dictionary<int, int> { };
         IPAddress thisAddress;
         delegate void AppendTextDelegate(Control ctrl, string s);
         AppendTextDelegate _textAppender;
@@ -81,33 +81,27 @@ namespace Server
         {
             if (this.mainSocket != null || this.mainSocket.Connected)
             {
-                try
-                {
-                    string s = "Closed";
-                    byte[] buff = Encoding.UTF8.GetBytes(s);
-                   
-                    //현재 연결되어있는 클라이언트에세 서버가 종료되었다는 사실을 알리고 Socket를 닫는다.
-                    for (int i = 0; i < connectedClients.Count(); i++)
-                    {
-                        connectedClients[i].Send(buff);
-                        connectedClients[i].Close();
-                    }
+                string s = "Closed";
+                byte[] buff = Encoding.UTF8.GetBytes(s);
 
-                    mainSocket.Close();
-                    txtServerLog.Text += "\nServer Stop";
-                }
-                catch (Exception ex)
+                //현재 연결되어있는 클라이언트에세 서버가 종료되었다는 사실을 알리고 Socket를 닫는다.
+                for (int i = 0; i < connectedClients.Count(); i++)
                 {
-                    MessageBox.Show("종료합니다.");
+                    connectedClients[i].Send(buff);
+                    connectedClients[i].Close();
                 }
+                mainSocket.Close();
+                txtServerLog.Text += "\nServer Stop";
+                connectedClients.Clear();
             }
         }
 
 
         private void AcceptConn(IAsyncResult ar)
         {
-            // 클라이언트의 연결 요청을 수락한다.
-            try { 
+            try
+            {
+                // 클라이언트의 연결 요청을 수락한다.
                 Socket client = mainSocket.EndAccept(ar);
                 // 또 다른 클라이언트의 연결을 대기한다.
                 mainSocket.BeginAccept(AcceptConn, null);
@@ -118,18 +112,15 @@ namespace Server
                 byte[] message;
                 foreach (var s in lb_room.Items)
                 {
-                    message = Encoding.UTF8.GetBytes('n' + s.ToString());
+                    message = Encoding.UTF8.GetBytes("n" + s.ToString());
                     client.Send(message);
                 }
                 AppendText(txtServerLog, string.Format("클라이언트 (@ {0})가 연결되었습니다.", client.RemoteEndPoint));
                 // 클라이언트의 데이터를 받는다.
                 client.BeginReceive(data, 0, size, 0, ReceiveData, client);
             }
-            catch(Exception ex)
-            {
+            catch(Exception e) { }
 
-            }
-            
         }
 
         //클라이언트에게 데이터를 전송하는 메소드
@@ -158,14 +149,6 @@ namespace Server
             if (!client.Connected)
                 return;
             int recv = client.EndReceive(iar);
-            //if (recv <= 0)
-            //{
-            //    //AppendText(txtServerLog, string.Format("클라이언트 (@ {0})가 나갔습니다.", client.RemoteEndPoint));
-            //    client.Shutdown(SocketShutdown.Both);
-            //    client.Close();
-            //    //connectedClients.Remove(client);
-            //    return;
-            //}
             string recvData = Encoding.UTF8.GetString(data, 0, recv);
             AppendText(this.txtServerLog, client.RemoteEndPoint +  " : " + recvData);
 
@@ -175,32 +158,64 @@ namespace Server
                 connectedClients.Remove(client);
                 return;
             }
-            if(recvData.Contains("CreateRoom "))
+            if (recvData.Contains("CreateRoom "))
             {
                 rN_Readynum[Room.Count] = 0;
                 Room[lb_room.Items.Count] = new List<Socket> { };
                 Room[lb_room.Items.Count].Add(client);
                 connectedClients.Remove(client);
-                
-                lb_room.Items.Add(recvData.Replace("CreateRoom ", "") +" " +Room[lb_room.Items.Count].Count);
+                rN_point[lb_room.Items.Count] = 0;
+
+                lb_room.Invoke(
+                    (MethodInvoker)delegate{
+                        lb_room.Items.Add(recvData.Replace("CreateRoom ", "") + " " + Room[lb_room.Items.Count].Count);
+                    });
+            }
+            else if (recvData.Contains("GAME@OVER@"))
+            {
+                string[] s = recvData.Split('@');
+                int rn = int.Parse(s[2]);
+                rN_Readynum[rn]++;
+                if(rN_point[rn]<int.Parse(s[3]))
+                {
+                    rN_point[rn] = int.Parse(s[3]);
+                }
+                if(rN_Readynum[rn]==0)
+                {
+                    foreach(var rm in Room[rn])
+                    {
+                        rm.Send(Encoding.UTF8.GetBytes(rN_point[rn]+"@WHOLE@GAME@END"));
+                    }
+                    rN_Readynum[rn]=0;
+                    rN_point[rn] = 0;
+                }
+                recvData = "";
+            }
+            else if (recvData.Contains("Release "))
+            {
+                string[] s = recvData.Split(' ');
+                int rn = int.Parse(s[1]);
+                rN_Readynum[rn]--;
+                recvData = "";
             }
             else if (recvData.Contains("Ready "))
             {
                 string[] s = recvData.Split(' ');
                 int rn = int.Parse(s[1]);
                 rN_Readynum[rn]++;
+
                 if(Room[rn].Count>=2 && rN_Readynum[rn]== Room[rn].Count)
                 {
-                    string s_in = "GAME START";
+                    string s_in = "GAME@@ START@@";
                     byte[] msg = Encoding.UTF8.GetBytes(s_in);
 
                     foreach (var r_mem in Room[rn])
                     {
                         r_mem.Send(msg);
                     }
-
-                    rN_Readynum[rn] = -3;
+                    rN_Readynum[rn] = -(rN_Readynum[rn]);
                 }
+                recvData = "";
             }
             else if (recvData.Contains("OR"))
             {
@@ -222,14 +237,14 @@ namespace Server
                 byte[] message;
                 foreach (var s3 in lb_room.Items)
                 {
-                    message = Encoding.UTF8.GetBytes('n' + s3.ToString());
+                    message = Encoding.UTF8.GetBytes("n" + s3.ToString());
                     client.Send(message);
                 }
             }
             else if(recvData.Contains("ER"))
             {
                 int n = int.Parse(recvData.Remove(0, 2));
-                if (rN_Readynum[n] == -3)
+                if (rN_Readynum[n] <0)
                 {
                     byte[] msg2 = Encoding.UTF8.GetBytes("ALREADY! GAME! START");
                     client.Send(msg2);
@@ -237,7 +252,6 @@ namespace Server
                 }
                 else
                 {
-                    //client.Send(Encoding.UTF8.GetBytes("ERAdmin" + n));
                     string s_in = "USER JOIN THE ROOM!! Number of User : " + (Room[n].Count + 1);
                     byte[] msg = Encoding.UTF8.GetBytes(s_in);
                     Room[n].Add(client);
