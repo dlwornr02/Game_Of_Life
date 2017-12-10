@@ -233,6 +233,7 @@ namespace Game_Of_Life
             if (t != null)
             {
                 t.Abort();
+                start = false;
             }
             if (local_form_num == form_No && form_No > 1)
             {
@@ -541,6 +542,7 @@ namespace Game_Of_Life
                 if(t.IsAlive)
                 {
                     t.Abort();
+                    start = false;
                 }
             if (!mainSocket.Connected)
             {
@@ -558,6 +560,7 @@ namespace Game_Of_Life
                 if (t.IsAlive)
                 {
                     t.Abort();
+                    start = false;
                 }
             for (int i = 0; i < row; i++)
             {
