@@ -541,8 +541,7 @@ namespace Game_Of_Life
             if(t!=null)
                 if(t.IsAlive)
                 {
-                    t.Abort();
-                    start = false;
+                    stop_Click(stopBtn, null);
                 }
             if (!mainSocket.Connected)
             {
@@ -556,26 +555,32 @@ namespace Game_Of_Life
 
         private void 리셋ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (t != null)
-                if (t.IsAlive)
-                {
-                    t.Abort();
-                    start = false;
-                }
-            for (int i = 0; i < row; i++)
+            if (!game_start)
             {
-                for (int j = 0; j < col; j++)
+                if (t != null)
+                    if (t.IsAlive)
+                    {
+                        stop_Click(stopBtn, null);
+                    }
+                for (int i = 0; i < row; i++)
                 {
-                    p[i, j].BackColor = Color.White;
+                    for (int j = 0; j < col; j++)
+                    {
+                        p[i, j].BackColor = Color.White;
+                    }
                 }
+                point = 0;
+                generation = 0;
+                speed.Value = 0;
+                gen_sec = 1000 - speed.Value * 50;
+                speedlb.Text = gen_sec / 1000.0 + "sec/g";
+                lb_gen.Text = "generation: " + generation;
+                lb_point.Text = "point: " + point;
             }
-            point = 0;
-            generation = 0;
-            speed.Value = 0;
-            gen_sec = 1000 - speed.Value * 50;
-            speedlb.Text = gen_sec / 1000.0 + "sec/g";
-            lb_gen.Text = "generation: " + generation;
-            lb_point.Text = "point: " + point;
+            else
+            {
+                MessageBox.Show("게임중엔 불가능 합니다.");
+            }
         }
         private void 종료ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -592,6 +597,7 @@ namespace Game_Of_Life
                 if(t.IsAlive)
                 {
                     MessageBox.Show("게임이 실행중 입니다.");
+                    return;
                 }
             using (StreamWriter sw = new StreamWriter(new FileStream("save.txt", FileMode.Create)))
             {
@@ -716,14 +722,21 @@ namespace Game_Of_Life
 
         private void 접속해제ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (mainSocket.Connected)
+            if (!game_start)
             {
-                DisConnectServer();
-                set_Form_Size1();
+                if (mainSocket.Connected)
+                {
+                    DisConnectServer();
+                    set_Form_Size1();
+                }
+                else
+                {
+                    MessageBox.Show("서버에 연결되어있지 않습니다.");
+                }
             }
             else
             {
-                MessageBox.Show("서버에 연결되어있지 않습니다.");
+                MessageBox.Show("게임이 시작되었습니다. 게임종료후 다시시도하세요.");
             }
         }
 
