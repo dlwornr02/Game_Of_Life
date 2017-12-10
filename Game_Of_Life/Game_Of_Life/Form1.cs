@@ -157,10 +157,9 @@ namespace Game_Of_Life
 
             stopBtn.Enabled = false;
             f = new Setsize_dlg(form_No);
+
             //사용자의 IP설정
             SetIp();
-
-
             //서버와의 통신에 쓰일 Socket의 인스턴스를 생성해준다.
             if (mainSocket == null)
                 mainSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
@@ -169,18 +168,153 @@ namespace Game_Of_Life
                 set_Form_Size2();
             }
         }
-        private void set_Form_Size1()
+
+//////////UI의 변화를 담당하는 메소드들//////////
+        private void set_Form_Size1() //off-line일때
         {
             this.Size = new Size((col * 10 + 35), row * 10 + 190);
             this.MinimumSize = new Size((col * 10 + 35), row * 10 + 190);
             this.MaximumSize = new Size((col * 10 + 35), row * 10 + 190);
         }
-        private void set_Form_Size2()
+        private void set_Form_Size2() //on-line일때
         {
             this.Size = new Size((col * 10 + 35) * 2, row * 10 + 190);
             this.MinimumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
             this.MaximumSize = new Size((col * 10 + 35) * 2, row * 10 + 190);
             setlb_bt_size_position(true);
+        }
+        private void setlb_bt_size_position(bool visible) //방에 입장하기전 UI
+        {
+            if (visible)
+            {
+                lb_Room.Size = new Size(col * 10, row * 10);
+                lb_Room.Location = new Point(col * 10 + 35, 30);
+                bt_creRoom.Location = new Point(col * 10 + 35, row * 10 + 30);
+                bt_enter.Location = new Point(col * 10 + 150, row * 10 + 30);
+                lb_Room.Visible = true;
+                bt_creRoom.Visible = true;
+                bt_enter.Visible = true;
+            }
+            else
+            {
+                lb_Room.Visible = false;
+                bt_creRoom.Visible = false;
+                bt_enter.Visible = false;
+            }
+        }
+        private void setlb_bt_size_position2(bool visible) //방에 입장한 후 UI
+        {
+            if (visible)
+            {
+                tb_chat.Size = new Size(col * 10, row * 10);
+                tb_chat.Location = new Point(col * 10 + 35, 30);
+                bt_ready.Location = new Point(col * 10 + 35, row * 10 + 30);
+                bt_exit.Location = new Point(col * 10 + 130, row * 10 + 30);
+                tb_chat.Visible = true;
+                bt_ready.Visible = true;
+                bt_exit.Visible = true;
+            }
+            else
+            {
+                tb_chat.Visible = false;
+                bt_ready.Visible = false;
+                bt_exit.Visible = false;
+            }
+        }
+//////////////Form의 size가 바뀌는 이벤트 처리부분///////////////
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            startBtn.Location = new Point(this.Width / 3 - 37, this.Height - 70);
+            stopBtn.Location = new Point((this.Width / 3) * 2 - 37, this.Height - 70);
+        }
+//////////////Form이 종료될 때 발생하는 이벤트 처리///////////////
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e) //Form이 종료될 때의 이벤트 처리
+        {
+            if (t != null)
+            {
+                t.Abort();
+            }
+            if (local_form_num == form_No && form_No > 1)
+            {
+                if (mainSocket.Connected)
+                {
+                    DisConnectServer();
+                }
+                old_Form.Owner.Dispose(); //처음으로 생성된 Form은 hide()를 시켜줬기 때문에 반드시 해제를 해줘야 프로세스가 종료됨
+            }
+            //종료될 때 서버와 연결되어있다면 연결을 해제해줘야한다.
+            if (form_No == 1 && mainSocket.Connected)
+            {
+                DisConnectServer();
+            }
+        }
+//////////////세대간의 성장속도를 조절하는 TrackBar의 이벤트 처리부분/////////
+        private void speed_Scroll(object sender, EventArgs e)
+        {
+            gen_sec = 1000 - speed.Value * 50;
+            speedlb.Text = gen_sec / 1000.0 + "sec/g";
+
+        }
+//////////////panel클릭과 오른쪽마우스 클릭후 드레그 이벤트 처리////////
+        private void panelClicked(object sender, MouseEventArgs e)
+        {
+            if (start == false)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (((Panel)sender).BackColor == Color.White)
+                    {
+                        ((Panel)sender).BackColor = Color.Black;
+                        point++;
+                        lb_point.Text = "Point: " + point;
+                    }
+                    else
+                    {
+                        ((Panel)sender).BackColor = Color.White;
+                        point--;
+                        lb_point.Text = "Point: " + point;
+                    }
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    mouseDown = !mouseDown;
+                }
+            }
+
+        }
+        private void panelDrag(object sender, EventArgs e)
+        {
+            if (start == false && mouseDown)
+            {
+                if (((Panel)sender).BackColor == Color.White)
+                {
+                    ((Panel)sender).BackColor = Color.Black;
+                    point++;
+                    lb_point.Text = "Point: " + point;
+                }
+                else
+                {
+                    ((Panel)sender).BackColor = Color.White;
+                    point--;
+                    lb_point.Text = "Point: " + point;
+                }
+            }
+        }
+///////////////////////////////////버튼 이벤트 처리부분/////////////////////////////////
+        private void start_Click(object sender, EventArgs e)
+        {
+            stopBtn.Enabled = true;
+            start = true;
+            t = new Thread(blink);
+            t.Start();
+            ((Button)sender).Enabled = false;
+        }
+        private void stop_Click(object sender, EventArgs e)
+        {
+            start = false;
+            ((Button)sender).Enabled = false;
+            t.Abort();
+            startBtn.Enabled = true;
         }
         private void bt_ready_click(object sender, EventArgs e)
         {
@@ -327,109 +461,7 @@ namespace Game_Of_Life
 
             }
         }
-        private void setlb_bt_size_position(bool visible)
-        {
-            if (visible)
-            {
-                lb_Room.Size = new Size(col * 10, row * 10);
-                lb_Room.Location = new Point(col * 10 + 35, 30);
-                bt_creRoom.Location = new Point(col * 10 + 35, row * 10 + 30);
-                bt_enter.Location = new Point(col * 10 + 150, row * 10 + 30);
-                lb_Room.Visible = true;
-                bt_creRoom.Visible = true;
-                bt_enter.Visible = true;
-            }
-            else
-            {
-                lb_Room.Visible = false;
-                bt_creRoom.Visible = false;
-                bt_enter.Visible = false;
-            }
-        }
-        private void setlb_bt_size_position2(bool visible)
-        {
-            if (visible)
-            {
-                tb_chat.Size = new Size(col * 10, row * 10);
-                tb_chat.Location = new Point(col * 10 + 35, 30);
-                bt_ready.Location = new Point(col * 10 + 35, row * 10 + 30);
-                bt_exit.Location = new Point(col * 10 + 130, row * 10 + 30);
-                tb_chat.Visible = true;
-                bt_ready.Visible = true;
-                bt_exit.Visible = true;
-            }
-            else
-            {
-                tb_chat.Visible = false;
-                bt_ready.Visible = false;
-                bt_exit.Visible = false;
-            }
-        }
-        private void panelClicked(object sender, MouseEventArgs e)
-        {
-            if (start == false)
-            {
-                if (e.Button == MouseButtons.Left)
-                {
-                    if (((Panel)sender).BackColor == Color.White)
-                    {
-                        ((Panel)sender).BackColor = Color.Black;
-                        point++;
-                        lb_point.Text = "Point: " + point;
-                    }
-                    else
-                    {
-                        ((Panel)sender).BackColor = Color.White;
-                        point--;
-                        lb_point.Text = "Point: " + point;
-                    }
-                }
-                else if (e.Button == MouseButtons.Right)
-                {
-                    mouseDown = !mouseDown;
-                }
-            }
-
-        }
-        private void panelDrag(object sender, EventArgs e)
-        {
-            if (start == false && mouseDown)
-            {
-                if (((Panel)sender).BackColor == Color.White)
-                {
-                    ((Panel)sender).BackColor = Color.Black;
-                    point++;
-                    lb_point.Text = "Point: " + point;
-                }
-                else
-                {
-                    ((Panel)sender).BackColor = Color.White;
-                    point--;
-                    lb_point.Text = "Point: " + point;
-                }
-            }
-        }
-        private void Form1_SizeChanged(object sender, EventArgs e)
-        {
-
-            startBtn.Location = new Point(this.Width / 3 - 37, this.Height - 70);
-            stopBtn.Location = new Point((this.Width / 3) * 2 - 37, this.Height - 70);
-        }
-        private void stop_Click(object sender, EventArgs e)
-        {
-            start = false;
-            ((Button)sender).Enabled = false;
-            t.Abort();
-            startBtn.Enabled = true;
-        }
-        private void start_Click(object sender, EventArgs e)
-        {
-            stopBtn.Enabled = true;
-            start = true;
-            t = new Thread(blink);
-            t.Start();
-            ((Button)sender).Enabled = false;
-        }
+////////////////////////life-game이 동작하는 알고리즘을 계산하는 메소드/////////////////
         private static void blink()
         {
             while (true)
@@ -502,6 +534,7 @@ namespace Game_Of_Life
             }
         }
 
+////////////////////////////Menuitem의 이벤트를 처리하는 부분//////////////////////
         private void 게임크기설정ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(t!=null)
@@ -660,35 +693,40 @@ namespace Game_Of_Life
             }
         }
 
-        private void speed_Scroll(object sender, EventArgs e)
+        private void 접속ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            gen_sec = 1000 - speed.Value * 50;
-            speedlb.Text = gen_sec / 1000.0 + "sec/g";
-
-        }
-        //////////////////////////////////////////////////////////////////////////////
-        //communication with server(서버와의 통신을 위한 코드)
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e) //Form이 종료될 때의 이벤트 처리
-        {
-            if (t != null)
+            SetServer_IP dlg = new SetServer_IP();
+            //dlg의 DialogResult가 OK라면 연결해준다.
+            if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                t.Abort();
-            }
-            if (local_form_num == form_No && form_No > 1)
-            {
-                if (mainSocket.Connected)
+                if (!mainSocket.Connected)
                 {
-                    DisConnectServer();
+                    ConnectServer(server_IP, server_Port);
+                    setlb_bt_size_position(true);
                 }
-                old_Form.Owner.Dispose(); //처음으로 생성된 Form은 hide()를 시켜줬기 때문에 반드시 해제를 해줘야 프로세스가 종료됨
+                else
+                {
+                    MessageBox.Show("이미 연결되어있습니다.");
+                }
             }
-            //종료될 때 서버와 연결되어있다면 연결을 해제해줘야한다.
-            if (form_No == 1 && mainSocket.Connected)
+        }
+
+        private void 접속해제ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (mainSocket.Connected)
             {
                 DisConnectServer();
+                set_Form_Size1();
+            }
+            else
+            {
+                MessageBox.Show("서버에 연결되어있지 않습니다.");
             }
         }
 
+
+//////////////////////////////////////////////////////////////////////////////
+//////////서버와의 통신을 위한 메소드들//////////
         private void SetIp()
         {
             IPHostEntry he = Dns.GetHostEntry(Dns.GetHostName());
@@ -874,35 +912,6 @@ namespace Game_Of_Life
             byte[] message = Encoding.UTF8.GetBytes(msg);
             mainSocket.Send(message);
         }
-        //MenuItem클릭시 발생하는 이벤트처리하는 부분
-        private void 접속ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetServer_IP dlg = new SetServer_IP();
-            //dlg의 DialogResult가 OK라면 연결해준다.
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {
-                if (!mainSocket.Connected)
-                {
-                    ConnectServer(server_IP, server_Port);
-                    setlb_bt_size_position(true);
-                }
-                else
-                {
-                    MessageBox.Show("이미 연결되어있습니다.");
-                }
-            }
-        }
-        private void 접속해제ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (mainSocket.Connected)
-            {
-                DisConnectServer();
-                set_Form_Size1();
-            }
-            else
-            {
-                MessageBox.Show("서버에 연결되어있지 않습니다.");
-            }
-        }
+        
     }
 }
